@@ -126,12 +126,96 @@ for (frase in frases) {
 
 # Tema 3: Manipulación de datos ----
 
-# Convertir el data frame en tibble
 df5 <- as_tibble(df5)
 
 ## Función select(): columnas ----
+df5 %>% select(`Marca temporal`)
+df5 %>% select(`Marca temporal`, `Escribe tu edad exacta`)
+df5 %>% select(-c(`Marca temporal`, `¿Estás estudiando en algún colegio, universidad o instituto?`))
+df5 %>% select(-c(`Marca temporal`:edadZ))
+df5 %>% select(starts_with("edad"))
+df5 %>% select(contains("edad"))
+df5 %>% select(ends_with("00:00"))
+
 
 ## Función filter(): filas ----
+df5 %>% filter(Sexo == "Hombre")
+df5 %>% filter(Sexo != "Mujer")
+df5 %>% filter(edadGR == "18 o menos" | edadGR == "19 a 21")
+df5 %>% filter(edadGR %in% c("18 o menos", "19 a 21"))
+df5 %>% filter(!edadGR %in% c("18 o menos", "19 a 21"))
+df5 %>% filter(edad2 >= 21)
+df5 %>% filter(edad2 < 21)
+df5 %>% filter(between(edad2, 18, 21))
+df5 %>% filter(edad2 >= 18, edad2 <= 21)
+df5 %>% filter(edad2 >= 18 & edad2 <= 21)
+
+## Combinando select y filter
+df5 %>% 
+  select(edad2, edadGR) %>% 
+  filter(edad2 < 18)
+
+
+## Nombre de columnas ----
+
+df6 <- df5
+
+### Apps
+
+#### Paso 1: Crear un vector con los nuevos nombres
+apps <- c("TikTok", "Instagram", "Facebook", "YouTube")
+
+#### Paso 2: Reemplazo
+colnames(df6)[33:36] <- apps
+
+
+### Frases
+
+#### Paso 1: Crear un vector con los nuevos nombres
+frases2 <- frases %>%
+  as_tibble() %>% 
+  separate(col = "value",
+           into = c("basura", "frase"),
+           sep = "\\[") %>% 
+  select(-basura) %>% 
+  separate(col = "frase",
+           into = c("frase", "basura"),
+           sep = "\\]") %>% 
+  pull(frase)
+
+#### Paso 2: Reemplazo
+colnames(df6)[8:31] <- frases2
+
+
+## Pivot ----
+
+### Pivot Longer
+
+df7 <- df6 %>% 
+  pivot_longer(cols = apps,
+               names_to = "app",
+               values_to = "time")
+
+
+### Pivot Wider
+
+df8 <- df7 %>% 
+  pivot_wider(names_from = app,
+              values_from = time)
+
+
+df7 <- df7 %>% 
+  select(`Marca temporal`, Sexo, edadGR, app, time)
+
+
+# Tema 4: Detección de ouliers ----
+
+
+
+
+
+
+
 
 
 
