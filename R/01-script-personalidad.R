@@ -210,6 +210,76 @@ df7 <- df7 %>%
 
 # Tema 4: Detección de ouliers ----
 
+strsplit(df7$time, split = ":") %>% head()
+
+df7$time <- sapply(
+  strsplit(df7$time, split = ":"),
+  function(x) {
+    x <- as.numeric(x)
+    x[1] + x[2]/60 + x[3]/60^2
+  }
+)
+
+
+## Detección gráfica
+
+boxplot(df7$time)
+
+library(plotly)
+
+ggplotly(
+  df7 %>% 
+    # Dibujando el lienzo
+    ggplot(aes(x = app, y = time, fill = app)) +
+    # Especificando el tipo gráfico
+    geom_boxplot() +
+    # Escogiendo tema minimalista
+    theme_minimal() +
+    # Quitando leyenda
+    theme(legend.position = "none")
+)
+
+
+ggplotly(
+  df7 %>% 
+    ggplot(aes(x = Sexo, y = time, fill = app)) +
+    geom_boxplot() +
+    facet_wrap("app", nrow = 1) +
+    theme_minimal() +
+    theme(legend.position = "none")
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
