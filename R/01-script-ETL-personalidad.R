@@ -221,7 +221,7 @@ df7$time <- sapply(
 )
 
 
-## Detección gráfica
+## Detección gráfica ----
 
 boxplot(df7$time)
 
@@ -250,12 +250,54 @@ ggplotly(
 )
 
 
+## Tratamiento ----
+
+df9 <- df7 %>% 
+  mutate(
+    outlier = case_when(
+      app == "Facebook"  & time > 10    ~ "outlier",
+      app == "Instagram" & time > 12    ~ "outlier",
+      app == "TikTok"    & time > 16.39 ~ "outlier",
+      app == "YouTube"   & time > 9     ~ "outlier",
+      .default = "No outlier"
+    )
+  ) %>% 
+  group_by(app) %>% 
+  mutate(time2 = ifelse(test = outlier == "outlier",
+                        yes = mean(time, na.rm = T),
+                        no = time)) %>% 
+  ungroup()
+
+
+# Tema 5: Aggregations ----
+
+df9 %>% 
+  group_by(app, Sexo) %>% 
+  summarise(conteo = n(),
+            promedio  = mean(time),
+            desv      = sd(time),
+            promedio2 = mean(time2),
+            desv2     = sd(time2))
+
+
+df9 %>% 
+  count(edadGR) %>%
+  arrange(desc(n)) %>% 
+  mutate(prop = n/sum(n),
+         porcentaje = scales::percent(prop))
+
+
+df9 %>% 
+  count(Sexo, edadGR) %>% 
+  group_by(Sexo) %>% 
+  mutate(prop = n/sum(n),
+         porcentaje = scales::percent(prop)) %>% 
+  ungroup()
 
 
 
-
-
-
+# Guardando RDS
+saveRDS(object = df6, file = "R/data_frame.RDS")
 
 
 
